@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -89,14 +90,18 @@ bool MainWindow::SameSize(QImage first, QImage second, QImage third, QImage four
     return k == second.size() && k == third.size() && k == fourth.size();
 }
 
+static inline int linearGray(QRgb rgb)
+{
+    return std::max({qRed(rgb), qGreen(rgb), qBlue(rgb)});
+}
+
 void MainWindow::ProcessNormals(QImage image, int imagetype)
 {
     for(int y = 0; y < image.height(); y++)
     {
         for(int x = 0; x < image.width(); x++)
         {
-            QColor color = image.pixel(x, y);
-            double normal = color.valueF();
+            double normal = (double)linearGray(image.pixel(x, y)) / 255.0;
             normal -= 0.5;
             normal *= 2.0;
             if(imagetype == IMAGE::TOP)
@@ -159,9 +164,9 @@ void MainWindow::on_generateButton_clicked()
     {
         normals[i].normalize();
         QColor normColor;
-        normColor.setRedF((normals[i].x()+1.0)/2.0);
-        normColor.setGreenF((normals[i].y()+1.0)/2.0);
-        normColor.setBlueF((-normals[i].z()+1.0)/2.0);
+        normColor.setRgbF((normals[i].x()+1.0)/2.0,
+                          (normals[i].y()+1.0)/2.0,
+                          (-normals[i].z()+1.0)/2.0);
         int yCoord = i / topImage.width();
         int xCoord = i % topImage.width();
         resultImage.setPixel(QPoint(xCoord, yCoord), normColor.rgb());
