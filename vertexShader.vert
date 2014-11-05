@@ -1,5 +1,5 @@
 #ifdef GL_ES
-percision mediump float;
+precision mediump float;
 #endif
 
 attribute highp vec4 vertex;
