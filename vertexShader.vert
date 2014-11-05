@@ -1,3 +1,7 @@
+#ifdef GL_ES
+percision mediump float;
+#endif
+
 attribute highp vec4 vertex;
 attribute mediump vec4 texCoord;
 
